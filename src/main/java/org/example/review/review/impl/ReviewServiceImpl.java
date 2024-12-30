@@ -17,6 +17,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> getAllReviews(Long productId) {
+        System.out.println("Build trigger");
         List<Review> reviews = reviewRepository.findByProductId(productId);
         return reviews;
     }
