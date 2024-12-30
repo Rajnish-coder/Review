@@ -9,10 +9,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
-    private ReviewService reviewService;
 
-    public ReviewController(ReviewService reviewService) {
+    private ReviewService reviewService;
+    private ReviewMessageProducer reviewMessageProducer;
+
+    public ReviewController(ReviewService reviewService,ReviewMessageProducer reviewMessageProducer) {
         this.reviewService = reviewService;
+        this.reviewMessageProducer = reviewMessageProducer;
     }
 
     @GetMapping
@@ -25,9 +28,11 @@ public class ReviewController {
     public ResponseEntity<String> addReview(@RequestParam Long productId,
                                             @RequestBody Review review){
             boolean isReviewSaved = reviewService.addReview(productId, review);
-            if (isReviewSaved)
+            if (isReviewSaved) {
+                reviewMessageProducer.sendMessage(review);
                 return new ResponseEntity<>("Review Added Successfully",
-                    HttpStatus.OK);
+                        HttpStatus.OK);
+            }
             else
                 return new ResponseEntity<>("Review Not Saved",
                         HttpStatus.NOT_FOUND);
@@ -38,6 +43,14 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.getReview(reviewId),
                                     HttpStatus.OK);
 
+    }
+
+
+    @GetMapping("/averageRating")
+    public Double getAverageRating(@RequestParam Long productId){
+        List<Review> reviews = reviewService.getAllReviews(productId);
+        return reviews.stream().mapToDouble(review->review.getRating()).average()
+                .orElse(0.0);
     }
 
     @PutMapping("/{reviewId}")
