@@ -41,7 +41,6 @@ jobs:
 
       - name: Run Tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
           SPRING_DATASOURCE_USERNAME: testuser
           SPRING_DATASOURCE_PASSWORD: testpassword
         run: ./mvnw test
