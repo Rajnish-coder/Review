@@ -3,10 +3,10 @@ name: Spring Boot CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -30,6 +30,11 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+
+      - name: Set environment variables
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build with Gradle/Maven
         run: ./mvnw clean install
